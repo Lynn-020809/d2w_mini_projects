@@ -8,8 +8,39 @@ import sys
 #
 ###################################
 
+def merge(array, first, middle, last, byfunc):
+    left_point = 0
+    right_point = 0
+    total_index = first
+    left_array = array[first: middle+1]
+    right_array = array[middle+1: last+1]
+    while (left_point < len(left_array) and right_point < len(right_array)):
+        if (byfunc(left_array[left_point]) <= byfunc(right_array[right_point])):
+            array[total_index] = left_array[left_point]
+            left_point += 1
+        else:
+            array[total_index] = right_array[right_point]
+            right_point += 1
+        total_index += 1
+    if (left_point < len(left_array)):
+        for i in range(left_point, len(left_array)):
+            array[total_index] = left_array[i]
+            total_index += 1
+    if (right_point < len(right_array)):
+        for j in range(right_point, len(right_array)):
+            array[total_index] = right_array[j]
+            total_index += 1
+
+def mergesort_recursion(array, first, last, byfunc):
+    if (last-first >= 1):
+        middle = (last + first)//2
+        mergesort_recursion(array, first, middle, byfunc)
+        mergesort_recursion(array, middle+1, last, byfunc)
+        merge(array, first, middle, last, byfunc)
+
 def mergesort(array, byfunc=None):
-    pass
+    item_total = len(array)
+    mergesort_recursion(array, 0, item_total-1, byfunc)
 
 #################################
 
@@ -25,8 +56,27 @@ marks = ('X', 'O')
 
 class Move:
     def __init__(self):
-        pass
-
+        self.__row = -1
+        self.__col = -1
+        
+    @property
+    def row(self):
+        return self.__row
+    
+    @property
+    def col(self):
+        return self.__col
+        
+    @row.setter
+    def row(self, val):
+        if (isinstance(val, int)) and (val >= 0) and (val <= 2):
+            self.__row = val
+        
+    @col.setter
+    def col(self, val):
+        if (isinstance(val, int)) and (val >= 0) and (val <= 2):
+            self.__col = val
+        
     def __str__(self):
         return f"row: {self.row:}, col: {self.col:}"
 
@@ -65,7 +115,9 @@ class TicTacToe:
         Output:
         - None
         '''
-        pass
+        self.board = [['_', '_', '_'],
+                     ['_', '_', '_'],
+                     ['_', '_', '_']]
 
     def str_to_board(self, boardstr):
         '''
@@ -112,7 +164,7 @@ class TicTacToe:
         Output:
         - None
         '''
-        pass
+        self.board[row][col] = mark
 
     #############
     # Task 2
@@ -129,9 +181,11 @@ class TicTacToe:
         Output:
         - either 10 (maximizer) or -10 (minimizer)
         '''
-        
-        pass
-    
+        if self.max_player == cell:
+            return 10
+        elif self.min_player == cell:
+            return -10
+
     ###########
     # Task 3
     ###########
@@ -158,10 +212,18 @@ class TicTacToe:
             
             # check for each col and return proper score
             # write your code below
-            pass
+            if (board[0][idx] == board[1][idx] == board[2][idx]) and \
+               board[0][idx] in marks:
+                return self.checkwinner(board[0][idx])
         
         # check for the two diagonals for winning pattern
-        pass
+        if (board[0][0] == board[1][1] == board[2][2]) and \
+           board[0][0] in marks:
+            return self.checkwinner(board[0][0])
+
+        if (board[0][2] == board[1][1] == board[2][0]) and \
+            board[0][2] in marks:
+            return self.checkwinner(board[0][2])
     
         # if there is no winner, return 0
         return 0
@@ -184,16 +246,15 @@ class TicTacToe:
         '''
         
         # call evaluate() method to get the score
-        score = None
+        score = self.evaluate(self.board)
         
         # replace return None when appropriate
         if score == 10:
-            return None
+            return self.max_player
         elif score == -10:
-            return None
+            return self.min_player
         else:
-            return None
-        pass
+            return 0
     
     #########
     # Task 5
@@ -209,8 +270,11 @@ class TicTacToe:
         - returns True if there is an empty cell not yet occupied.
         - Otherwise, return False.
         '''
-        pass
-
+        for row in range(3):
+            for col in range(3):
+                if self.board[row][col] == '_':
+                    return True
+        return False
 
     ###########
     # Task 6
@@ -236,15 +300,15 @@ class TicTacToe:
             for col in range(3):
                 # check if cell is empty
                 # write the boolean condition and replace the None
-                empty = None
+                empty = (self.board[row][col] == '_')
                 if empty:
                     # make the move
                     # replace the None
-                    self.board[row][col] = None
+                    self.board[row][col] = player
                     
                     # The next two steps are to compute the evaluation function
                     # first, check if current player is maximizer
-                    is_max = None
+                    is_max = (player == self.max_player)
                     
                     # second, call minimax to get the score
                     # the minimax method has the following arguments:
@@ -257,18 +321,18 @@ class TicTacToe:
                     #.      => you should call the minimax as a minimizer
                     #.      if the current player is a minimizer,
                     #.      => you should call the minimax as a maximizer
-                    move_val = None
+                    move_val = self.minimax(self.board, 0, is_max)
                     
                     # undo the move
-                    self.board[row][col] = None
+                    self.board[row][col] = "_"
                     
                     # check if it is better
                     if (is_max and move_val > best_val) or \
                        ((not is_max) and move_val < best_val):
                         # set the property for the best move
-                        best_move.row = None
-                        best_move.col = None
-                        best_val = None
+                        best_move.row = row
+                        best_move.col = col
+                        best_val = move_val
 
         return best_move
 
@@ -289,12 +353,12 @@ class TicTacToe:
         '''
         score = self.evaluate(board)
         # write the boolean condition to check if there is a winner
-        any_winner = None
+        any_winner = (score != 0)
         if any_winner:
             return score
 
         # write the boolean condition to check if there is no more move
-        no_more_move = None
+        no_more_move = self.any_moves_left()
         if no_more_move:
             return 0
 
@@ -307,19 +371,20 @@ class TicTacToe:
                     # if there is a possible move
                     if board[row][col] == '_':
                         # set the board to the maximiser mark
-                        board[row][col] = None
+                        board[row][col] = self.max_player
                         
                         # compute evaluation function through recursion
                         # ensuring: 
                         # - increase level by 1
                         # - alternate to minimizer
-                        score = None
+                        score = self.minimax(self.board, depth+1, False)
                         
                         # set the best score so far
-                        best = None
+                        if score > best:
+                            best = score
                         
                         # undo the move
-                        board[row][col] = None
+                        board[row][col] = '_'
             return best
         else:
             # this is the step if it is the minimizer
@@ -328,7 +393,29 @@ class TicTacToe:
             # - initial value for the best score will be opposite
             # - set the mark to minimizer when trying the move
             # - change to maximizer when going deeper to the next level
-            pass
+            # this is to store the best score so far
+            best = sys.maxsize 
+            
+            for row in range(3):
+                for col in range(3):
+                    # if there is a possible move
+                    if board[row][col] == '_':
+                        # set the board to the maximiser mark
+                        board[row][col] = self.min_player
+                        
+                        # compute evaluation function through recursion
+                        # ensuring: 
+                        # - increase level by 1
+                        # - alternate to minimizer
+                        score = self.minimax(self.board, depth+1, True)
+                        
+                        # set the best score so far
+                        if score < best:
+                            best = score
+                        
+                        # undo the move
+                        board[row][col] = '_'
+            return best
 
     
 if __name__ == "__main__":
@@ -343,7 +430,20 @@ if __name__ == "__main__":
     # between 0 and 2
     #
     ########################
-    pass
+    action = Move()
+    assert action.row == -1
+    assert action.col == -1
+
+    action.row = 2
+    action.col = 0
+    assert action.row == 2
+    assert action.col == 0
+
+    action.row = -1
+    action.col = '0'
+    assert action.row == 2
+    assert action.col == 0
+
 
     ########################
     # Exercise 4
@@ -356,7 +456,7 @@ if __name__ == "__main__":
     #
     ########################
     
-    sys.exit(1)
+    # sys.exit(1)
     
     board1 = [['X', '_', 'O'],
              ['_', 'X', 'O'],
@@ -439,5 +539,5 @@ if __name__ == "__main__":
               ['_', 'X', '_']]
     
     t = TicTacToe(board7)
-    assert str(t.find_best_move('X')) == "row: 0, col: 2"
-    assert str(t.find_best_move('O')) == "row: 2, col: 2"
+    assert str(t.find_best_move('X')) == "row: 2, col: 2"
+    assert str(t.find_best_move('O')) == "row: 0, col: 2"

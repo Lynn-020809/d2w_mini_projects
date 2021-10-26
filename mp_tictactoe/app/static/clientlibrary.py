@@ -20,9 +20,11 @@ def update_computer(row, col, player):
     For example, the cell in the middle of the Tic Tac Toe grid
     is given by 'cell11'.
     '''
-
-    computer = None
-    cell_id = None
+    if player == 'X':
+        computer = 'O'
+    elif player == 'O':
+        computer = 'X'
+    cell_id = 'cell' + str(row) + str(col)
     console.log(cell_id)
     document.getElementById(cell_id).innerText = computer
 
@@ -37,7 +39,10 @@ def winning(player, winner):
 
     Write your code here. 
     '''
-    pass
+    if player == winner:
+        document.getElementById("winner").innerText = "You Win!"
+    else:
+        document.getElementById("winner").innerText = "You Lose!"
 
 def click_cell(username, row, col, mark):
     '''
@@ -49,7 +54,7 @@ def click_cell(username, row, col, mark):
     Update the TicTacToe grid cell with the mark. 
 
     '''
-    cellid = None
+    cellid = "cell" + str(row) + str(col)
     document.getElementById(None).innerText = None 
     socket.emit('clicked', {'username': username, 'id': cellid, 'mark': mark})
 

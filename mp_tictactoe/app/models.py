@@ -21,10 +21,9 @@ class User(UserMixin, db.Model):
     # Add draw column as integer, with default value 0
     # Add score column as integer, with default value 0
     ######################################################
-
-    winning = None
-    draw = None
-    score = None
+    winning = db.Column(db.Integer, default = 0)
+    draw = db.Column(db.Integer, default = 0)
+    score = db.Column(db.Integer, default = 0)
 
     def set_password(self, password):
         self.password_hash = generate_password_hash(password)
@@ -46,5 +45,5 @@ class State(db.Model):
     # Add a column to store for the mark of the player
     #  this should be a single string character
     #########################################################
-    cell = None
-    mark = None   
+    cell = db.Column(db.String(9))
+    mark = db.Column(db.String(1)) 

@@ -155,9 +155,9 @@ def handle_click(message):
                      cell=None,
                      mark=None)
         # write the code to add the data to the session
-	pass
+        pass
         # write the code to commit the session to the database
-	pass
+        pass
 
         # check if there is a winner
         if winner != None:
@@ -211,9 +211,9 @@ def single():
                      cell=None,
                      mark=None)
         # add the data to the session
-	pass
+        pass
         # commit the session to the database
-	pass
+        pass
         return render_template('single.html', title='Single Player', player=player_mark, computer=computer_mark)
     else:
         if user not in players:

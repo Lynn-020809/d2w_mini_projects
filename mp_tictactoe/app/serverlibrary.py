@@ -254,7 +254,7 @@ class TicTacToe:
         elif score == -10:
             return self.min_player
         else:
-            return 0
+            return None
     
     #########
     # Task 5
@@ -321,7 +321,7 @@ class TicTacToe:
                     #.      => you should call the minimax as a minimizer
                     #.      if the current player is a minimizer,
                     #.      => you should call the minimax as a maximizer
-                    move_val = self.minimax(self.board, 0, is_max)
+                    move_val = self.minimax(self.board, 0, not is_max)
                     
                     # undo the move
                     self.board[row][col] = "_"
